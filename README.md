@@ -1,5 +1,5 @@
 # 404PageRevival
-https://greasyfork.org/en/scripts/484103-404-archive-redirector
+https://greasyfork.org/en/scripts/484103-404pagerevival
 
 ## What it does 
 When encountering a page not found while browsing the web, 404PageRevival provides a button to redirect to the according page in the Wayback Machine (internet archive)
