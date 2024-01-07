@@ -9,6 +9,7 @@
 // @match        *://*/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=tampermonkey.net
 // @grant        none
+// @licence      MIT
 // ==/UserScript==
 
 const infoBarContainerStyle = 'position: fixed; width: 100%;height: 40px; top: 0; background-color: #333; ' +
