@@ -7,6 +7,10 @@ When encountering a page not found while browsing the web, 404PageRevival provid
 &nbsp;
 💡 Idea by [Divide-By-0](https://github.com/Divide-By-0/app-ideas-people-would-use).
 
+## Screenshots
+![404PageRevival](https://github.com/DanzHD/404PageRevival/assets/120297386/bdf027ac-207d-410e-a54e-b133d5ff1775)
+
+
 ## Limitations
 404PageRevival detects a 'not found' page through status codes. However, this may not always be reliable as a site may serve a resource with the wrong status code or use an intermediary page to redirect back to the main page. Hence, the infobar may pop up even when the website is available.
 
