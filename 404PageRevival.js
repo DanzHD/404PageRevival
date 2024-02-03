@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         404PageRevival
 // @namespace    http://tampermonkey.net/
-// @version      1.1.1
+// @version      1.1.2
 // @description  Redirects 404 page not found to the according page in the Wayback Machine
 // @author       Daniel Duong
 // @match        *://*/*
@@ -16,11 +16,11 @@
 
 const infoBarContainerStyle = 'position: absolute; min-width: 450px; width: 100vw; height: 40px; top: 0; left: 0; background-color: #333; ' +
     'margin-bottom: 20px; z-index: 9999; display: flex; align-items: center; padding-left: 10%; box-sizing: ' +
-    'border-box; font-family: open-sans; justify-content: space-between;'
+    'border-box; font-family: open-sans; justify-content: space-between; font-size: 20px; '
 const buttonStyle = "position: relative; min-width: fit-content; height: 80%; background-color: orange; vertical-align: " +
     "center; display: inline-flex; justify-content: center; align-items: center; border-radius: 15px; border: none; " +
-    "color: white; font-size: 1em; padding: 10px; margin-left: auto; margin-right: 5%; cursor: pointer; overflow: hidden; white-space: nowrap";
-const textStyle = `color: white; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-right: 1%`;
+    "color: white; font-size: 20px; padding: 10px; margin-left: auto; margin-right: 5%; cursor: pointer; overflow: hidden; white-space: nowrap";
+const textStyle = `color: white; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-right: 1%; margin-bottom: 0; margin-top: 0`;
 
 const WAYBACK_ENDPORT = "http://archive.org/wayback/available?url=";
 const ARCHIVED_SNAPSHOTS = "archived_snapshots";
