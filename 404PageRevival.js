@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         404PageRevival
 // @namespace    http://tampermonkey.net/
-// @version      1.1.2
+// @version      1.1.3
 // @description  Redirects 404 page not found to the according page in the Wayback Machine
 // @author       Daniel Duong
 // @match        *://*/*
@@ -19,13 +19,15 @@ const infoBarContainerStyle = 'position: absolute; min-width: 450px; width: 100v
     'border-box; font-family: open-sans; justify-content: space-between; font-size: 20px; '
 const buttonStyle = "position: relative; min-width: fit-content; height: 80%; background-color: orange; vertical-align: " +
     "center; display: inline-flex; justify-content: center; align-items: center; border-radius: 15px; border: none; " +
-    "color: white; font-size: 20px; padding: 10px; margin-left: auto; margin-right: 5%; cursor: pointer; overflow: hidden; white-space: nowrap";
-const textStyle = `color: white; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-right: 1%; margin-bottom: 0; margin-top: 0`;
+    "color: white; font-size: 20px; padding: 10px; margin-left: auto; margin-right: 5%; cursor: pointer; overflow: hidden; white-space: nowrap; font-family: Arial !important; text-transform: none !important; font-weight: 500 !important; ";
+const textStyle = `color: white; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-right: 1%; margin-bottom: 0; margin-top: 0; font-family: Arial !important; text-transform: none !important; font-size: 20px !important; font-weight: 500 !important;`;
 
 const WAYBACK_ENDPORT = "http://archive.org/wayback/available?url=";
 const ARCHIVED_SNAPSHOTS = "archived_snapshots";
 const CLOSEST = "closest";
 const URL = "url";
+
+let infobarCreated = false;
 
 (async function() {
     'use strict';
@@ -33,11 +35,22 @@ const URL = "url";
     GM_addStyle(iconCSS);
 
     if (await is404Page(window.location.href)) {
-        createInfoBar("This page is missing. Do you want to check for a saved version on the Wayback Machine?",
-            "Check for saved version", () => hasSavedVersion(window.location.href),
-            true);
+        try {
+
+            let savedURL = await hasSavedVersion(window.location.href);
+            if (savedURL) {
+                infobarCreated = true;
+                createInfoBar("Click on the button to redirect to the Wayback Machine", "Redirect to internet archive", () => window.location.href=savedURL, true);
+            } else {
+                createInfoBar("No archive of page found on the Wayback Machine", null, null, false);
+            }
+        } catch(err) {
+            createInfoBar("Something went wrong...", null, null, false);
+        }
+
 
     }
+
 
 
 })();
@@ -45,14 +58,16 @@ const URL = "url";
 async function is404Page(url) {
     try {
         const options = {
-            url: url,
-            method: 'head'
+            url: url
         }
 
-        const res = await GM.xmlHttpRequest(options);
+
+        const {status} = await GM.xmlHttpRequest(options);
+
         const errorCodes = [404, 408, 410, 451, 500, 502, 503, 509, 520, 521, 523, 524, 525, 526];
 
-        return errorCodes.includes(res.status);
+
+        return errorCodes.includes(status);
     } catch (err) {
         return false;
     }
@@ -63,17 +78,6 @@ async function is404Page(url) {
 async function hasSavedVersion(currentURL) {
     try {
 
-        buttonNode.className = "material-symbols-outlined";
-        buttonNode.textContent = "progress_activity";
-        buttonNode.animate([
-                { transform: 'rotate(0deg)' },
-                { transform: 'rotate(360deg)'},
-            ],
-            {
-                duration: 2000,
-                iterations: Infinity
-            });
-
         const options = {
             method: 'GET',
             url: WAYBACK_ENDPORT + currentURL,
@@ -83,25 +87,21 @@ async function hasSavedVersion(currentURL) {
             responseType: 'JSON'
         };
 
-
-
         let res = await GM.xmlHttpRequest(options);
         let archive = await res.response;
 
         if (Object.keys(archive[ARCHIVED_SNAPSHOTS]).length === 0) {
-            removeInfoBar();
-            createInfoBar("No saved version of this page has been found on the Wayback machine",
-                null, null, false);
+
             return false;
         } else {
-            window.location.href = archive[ARCHIVED_SNAPSHOTS][CLOSEST][URL];
+
+            return archive[ARCHIVED_SNAPSHOTS][CLOSEST][URL];
 
         }
     } catch(err) {
-        removeInfoBar();
-        createInfoBar("Sorry. Unable to get data from the Wayback machine", null, null, false);
-    }
+        throw err;
 
+    }
 
 
 }
@@ -113,7 +113,7 @@ function createInfoBar(infoBarText, buttonTextContent, onBtnClick, createButton)
     const bodyElement = document.querySelector('body');
     const infoBarContainerNode = document.createElement("div");
 
-    const infoBarTextNode = document.createElement("p");
+    const infoBarTextNode = document.createElement("div");
 
     infoBarTextNode.textContent = infoBarText;
     infoBarTextNode.setAttribute('style', textStyle);
